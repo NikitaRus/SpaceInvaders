@@ -1,0 +1,297 @@
+<html>
+
+	<head>
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+		<script src="javascript/jquery.js"></script>
+	</head>
+
+	<body>
+		<img src="images/star.png" id="star">
+		<img src="images/asteroid.png" id="asteroid">
+		<img src="images/ship.png" id="ship">
+
+		<div class="mainMenu" id="mainMenu">
+			<table class="smallMenu" width="300px" height="50%">
+				<tr><td></td></tr>
+				<tr><td></td></tr>
+				<tr><td><button class="playButton" onclick="$('#starCanvas').show(); $('#mainMenu').hide();"><p>Play</p></button></td></tr>
+				<tr><td><button class="playButton" onclick="$('#scoresMenu').show(); $('#mainMenu').hide();"><p>Scores</p></button></td></tr>
+				<tr><td></td></tr>
+				<tr><td></td></tr>
+			</table>
+		</div>
+		<div id="scoresMenu" class="scoresMenu mainMenu">
+			<h1>Scores</h1>
+			<div id="scores">
+
+
+			</div>
+
+			<script>
+				Scores = document.getElementById("scores");
+				
+				for(s = 0; s < 10; s ++)	
+				{
+					Scores.innerHTML += "<table class='scores'><tr><td><p>1111</p></td><td><p>Player</p></td></tr></table>"
+				}
+
+			</script>
+
+			<button class="backButton" onclick="$('#scoresMenu').hide(); $('#mainMenu').show();"><p>Back</p></button>
+		</div>
+		<canvas width="800px" height="600" id="starCanvas" style="border: double 3px;position: absolute;left: 8px;top: 24px; background-color: black;"></canvas>
+
+		<script>
+			cvas = document.getElementById("starCanvas");
+			cvasBox = cvas.getContext("2d");
+
+			$('#starCanvas').hide();
+			$('#scoresMenu').hide();
+
+			StarImage = document.getElementById("star");
+			AsteroidImage = document.getElementById("asteroid");
+			ShipImage = document.getElementById("ship");
+
+			var width = 800;
+			var height = 600;
+
+			var Stars = [];
+
+			for(s = 0; s <= Math.floor(Math.random()*20)+1; s++)
+			{
+				var tmpW = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
+				var tmpH = 0;
+
+				Star = {
+					x: tmpW,
+					y: tmpH + (Math.floor(Math.random()*5)+1)*100,
+					size: 2
+				};
+
+				Stars.push(Star);
+			}
+
+
+			var Asteroids = [];
+
+			for(e = 0; e <= Math.floor(Math.random()*3)+1; e++)
+			{
+				var tmpW = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
+				var tmpH = 200;
+
+				Asteroid = {
+					x: tmpW,
+					y: tmpH,
+					size: 5,
+					health: 100
+				};
+
+				Asteroids.push(Asteroid);
+			}
+
+
+			function moveStars()
+			{
+				
+				for(Star in Stars)
+				{
+					cvasBox.drawImage(StarImage, Stars[Star].x, Stars[Star].y, Stars[Star].size, Stars[Star].size);
+					Stars[Star].size += 0.01;
+					Stars[Star].y += 2.80;
+					Stars[Star].x += -1.40;
+
+					if(Stars[Star].y > height - 100)
+					{
+						Stars[Star].y = 200;
+						Stars[Star].x = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
+						Stars[Star].size = 2;
+					}
+				}
+			}
+
+			function moveAsteroids()
+			{
+				for(Asteroid in Asteroids)
+				{
+					cvasBox.drawImage(AsteroidImage, Asteroids[Asteroid].x, Asteroids[Asteroid].y, Asteroids[Asteroid].size, Asteroids[Asteroid].size)
+					Asteroids[Asteroid].size += 1;
+					Asteroids[Asteroid].y += 8;
+					Asteroids[Asteroid].x += -4;
+
+
+					cvasBox.strokeRect(Asteroids[Asteroid].x,Asteroids[Asteroid].y, Asteroids[Asteroid].size, Asteroids[Asteroid].size);
+					cvasBox.strokeRect(shipObject.x, shipObject.y, shipObject.width, shipObject.height);
+
+					if(Asteroids[Asteroid].x + shipObject.width > shipObject.x && Asteroids[Asteroid].x + shipObject.width < shipObject.x + shipObject.width && Asteroids[Asteroid].y > shipObject.y && Asteroids[Asteroid].y < shipObject.y + shipObject.height)
+					{
+						shipObject.health -= 20;
+						delete Asteroids[Asteroid];
+
+						var tmpW = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
+						var tmpH = 200;
+						
+						Asteroid = {
+							x: tmpW,
+							y: tmpH,
+							size: 5,
+							health: 100
+						};
+						
+						Asteroids.push(Asteroid);
+
+					}
+
+					if(Asteroids[Asteroid])
+					{
+						if(Asteroids[Asteroid].y > height)
+						{
+							Asteroids[Asteroid].y = 0;
+							Asteroids[Asteroid].x = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
+							Asteroids[Asteroid].size = 5;
+						}
+					}
+				}
+			}
+
+
+			var keysDown = {};
+			var shipObject = {
+				Image: ShipImage,
+				x: width/2,
+				y: height - 100,
+				width: 50,
+				height: 50,
+				health: 100
+			}
+
+			addEventListener("keydown", function(e) {
+				keysDown[e.keyCode] = true;
+			});
+
+			addEventListener("keyup", function(e) {
+				delete keysDown[e.keyCode];
+			});
+
+
+			function drawHealthBar()
+			{
+				cvasBox.strokeStyle = "green";
+				cvasBox.strokeRect(10, 10, 100, 20);
+				cvasBox.fillStyle = "purple";
+				cvasBox.fillRect(11, 11, 98/100*shipObject.health, 18);
+			}
+
+			var shooting = false;
+			var Bullets = [];
+			var shootingInterval;
+			var shootingFunction = function(){
+				Bullet = {
+					x: shipObject.x + shipObject.width/2 - 10 + Math.random()*20,
+					y: shipObject.y
+				}
+
+				Bullets.push(Bullet);
+
+				for(BulletAux in Bullets)
+				{
+					Bullets[BulletAux].y -= 16;
+
+					if(Bullets[BulletAux].y > height)
+					{
+						delete Bullets[BulletAux];
+					}
+
+					for(Asteroid in Asteroids)
+					{
+						if(Bullets[BulletAux].x > Asteroids[Asteroid].x && Bullets[BulletAux].x < Asteroids[Asteroid].x + Asteroids[Asteroid].size && Bullets[BulletAux].y > Asteroids[Asteroid].y && Bullets[BulletAux].y + 8 < Asteroids[Asteroid].y + Asteroids[Asteroid].size)
+						{
+
+
+							Asteroids[Asteroid].health -= 20;
+
+							cvasBox.strokeStyle = "green";
+							cvasBox.strokeRect(Bullets[BulletAux].x, Bullets[BulletAux].y, 2, 2);
+
+							if(Asteroids[Asteroid].health <= 0)
+							{
+								delete Asteroids[Asteroid];
+
+								var tmpW = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
+								var tmpH = 200;
+
+								Asteroid = {
+									x: tmpW,
+									y: tmpH,
+									size: 5,
+									health: 100
+								};
+
+								Asteroids.push(Asteroid);
+							}
+						}
+					}
+
+					cvasBox.strokeStyle = "red";
+					cvasBox.strokeRect(Bullets[BulletAux].x, Bullets[BulletAux].y, 2, 8);
+				}
+			};
+
+			function moveShip()
+			{
+				if(38 in keysDown) 
+				{
+					shipObject.y -= 30;
+				}
+				if(40 in keysDown) 
+				{
+					shipObject.y += 30;
+				}
+				if(37 in keysDown) 
+				{
+					shipObject.x -= 30;
+				}
+				if(39 in keysDown) 
+				{
+					shipObject.x += 30;
+				}
+				if(32 in keysDown)
+				{
+					if(shooting == false)
+					{
+						shooting = true;
+						shootingInterval = setInterval(shootingFunction, 50)
+					}
+				} else {
+					Bullets = [];
+					clearInterval(shootingInterval);
+					shooting = false;
+				}
+
+				cvasBox.drawImage(shipObject.Image, shipObject.x, shipObject.y, shipObject.width, shipObject.height);
+			}
+
+			function drawFrame()
+			{
+				cvasBox.clearRect(0, 0, width, height);
+				moveStars();
+				moveAsteroids();
+				moveShip();
+				drawHealthBar();
+			}
+
+			function healthUp()
+			{
+				if(shipObject.health < 100)
+				{
+					shipObject.health += 20;
+				}
+			}
+
+			shipHealthInterval = setInterval(healthUp, 1000);
+			starsInterval = setInterval(drawFrame, 100);
+
+		</script>
+
+	</body>
+
+</html>

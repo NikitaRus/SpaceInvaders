@@ -1,0 +1,63 @@
+.mainMenu
+{
+	width: 800px;
+	height: 600px;
+	border: solid 3px;
+	background: black;
+	color: purple;
+}
+
+p 
+{
+	font-size: 14pt;
+	color: purple;
+	font-weight: bold;
+	text-align: center;
+}
+
+.scoresMenu
+{
+	border: double 3px;
+	position: absolute;
+	left: 8px;
+	top: 24px;
+}
+
+.smallMenu
+{
+	border: solid 3px;
+	color: purple;
+	margin-left: 30%;
+	margin-top: 15%;
+}
+
+.playButton
+{
+	background: black;
+	border: solid 3px;
+	color: purple;
+	width: 200px;
+	height: 80px;
+	margin-left: 15%;
+}
+
+.backButton
+{
+	background: black;
+	border: solid 3px;
+	color: purple;
+	width: 200px;
+	height: 80px;
+	margin-left: 35%;
+	margin-top: 5%;
+}
+
+.scores
+{
+	padding-left: 35%;
+}
+
+h1
+{
+	margin: 2%;
+}
