@@ -9,6 +9,7 @@
 		<img src="images/star.png" id="star">
 		<img src="images/asteroid.png" id="asteroid">
 		<img src="images/ship.png" id="ship">
+		<img src="images/heart.png" id="heart">
 
 		<div class="mainMenu" id="mainMenu">
 			<table class="smallMenu" width="300px" height="50%">
@@ -124,7 +125,18 @@
 
 					if(Asteroids[Asteroid].x + shipObject.width > shipObject.x && Asteroids[Asteroid].x + shipObject.width < shipObject.x + shipObject.width && Asteroids[Asteroid].y > shipObject.y && Asteroids[Asteroid].y < shipObject.y + shipObject.height)
 					{
-						shipObject.health -= 20;
+						shipObject.health -= 50;
+
+						if(shipObject.health <= 0)
+						{
+							if(shipObject.hearts > 0)
+							{
+								shipObject.hearts -= 1;
+								shipObject.health = 100;
+							} else {
+								alert("Game Over");
+							}
+						}
 						delete Asteroids[Asteroid];
 
 						var tmpW = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
@@ -161,7 +173,8 @@
 				y: height - 100,
 				width: 50,
 				height: 50,
-				health: 100
+				health: 100,
+				hearts: 3
 			}
 
 			addEventListener("keydown", function(e) {
@@ -181,13 +194,28 @@
 				cvasBox.fillRect(11, 11, 98/100*shipObject.health, 18);
 			}
 
+			function drawHearts()
+			{
+				HeartImage = document.getElementById("heart");
+
+				for(h = 0; h < shipObject.hearts; h++)
+				{
+					cvasBox.drawImage(HeartImage, (800 - 40)-h*40, 20, 30, 30);
+				}
+
+			}
+
 			var shooting = false;
 			var Bullets = [];
 			var shootingInterval;
 			var shootingFunction = function(){
-				Bullet = {
-					x: shipObject.x + shipObject.width/2 - 10 + Math.random()*20,
-					y: shipObject.y
+				
+				if(shooting == true)
+				{
+					Bullet = {
+						x: shipObject.x + shipObject.width/2 - 10 + Math.random()*20,
+						y: shipObject.y
+					};
 				}
 
 				Bullets.push(Bullet);
@@ -196,9 +224,9 @@
 				{
 					Bullets[BulletAux].y -= 16;
 
-					if(Bullets[BulletAux].y > height)
+					if(Bullets[BulletAux].y < 0)
 					{
-						delete Bullets[BulletAux];
+						Bullets.splice(0, 1);
 					}
 
 					for(Asteroid in Asteroids)
@@ -277,6 +305,7 @@
 				moveAsteroids();
 				moveShip();
 				drawHealthBar();
+				drawHearts();
 			}
 
 			function healthUp()
