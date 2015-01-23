@@ -174,7 +174,8 @@
 				width: 50,
 				height: 50,
 				health: 100,
-				hearts: 3
+				hearts: 3,
+				bulletSpeed: 1
 			}
 
 			addEventListener("keydown", function(e) {
@@ -192,6 +193,14 @@
 				cvasBox.strokeRect(10, 10, 100, 20);
 				cvasBox.fillStyle = "purple";
 				cvasBox.fillRect(11, 11, 98/100*shipObject.health, 18);
+			}
+
+			function drawBulletSpeed()
+			{
+				cvasBox.strokeStyle = "green";
+				cvasBox.strokeRect(150, 10, 100, 20);
+				cvasBox.fillStyle = "purple";
+				cvasBox.fillRect(151, 11, 98/10*shipObject.bulletSpeed, 18);
 			}
 
 			function drawHearts()
@@ -219,7 +228,9 @@
 				}
 
 				Bullets.push(Bullet);
+			};
 
+			var bulletMovementFunction = function(){
 				for(BulletAux in Bullets)
 				{
 					Bullets[BulletAux].y -= 16;
@@ -290,7 +301,6 @@
 						shootingInterval = setInterval(shootingFunction, 50)
 					}
 				} else {
-					Bullets = [];
 					clearInterval(shootingInterval);
 					shooting = false;
 				}
@@ -305,6 +315,7 @@
 				moveAsteroids();
 				moveShip();
 				drawHealthBar();
+				drawBulletSpeed();
 				drawHearts();
 			}
 
@@ -316,6 +327,7 @@
 				}
 			}
 
+			bulletMovementInterval = setInterval(bulletMovementFunction, 50);
 			shipHealthInterval = setInterval(healthUp, 1000);
 			starsInterval = setInterval(drawFrame, 100);
 
