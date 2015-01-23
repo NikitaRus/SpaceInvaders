@@ -133,6 +133,11 @@
 							{
 								shipObject.hearts -= 1;
 								shipObject.health = 100;
+								shipObject.bulletSpeed = 1;
+
+								clearInterval(shootingInterval);
+								shootingInterval = setInterval(shootingFunction, 400/shipObject.bulletSpeed)
+
 							} else {
 								alert("Game Over");
 							}
