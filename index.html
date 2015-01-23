@@ -137,6 +137,7 @@
 								alert("Game Over");
 							}
 						}
+
 						delete Asteroids[Asteroid];
 
 						var tmpW = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
@@ -255,6 +256,13 @@
 							{
 								delete Asteroids[Asteroid];
 
+								if(shipObject.bulletSpeed < 10)
+								{
+									shipObject.bulletSpeed += 1;
+									clearInterval(shootingInterval);
+									shootingInterval = setInterval(shootingFunction, 400/shipObject.bulletSpeed)
+								}
+
 								var tmpW = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
 								var tmpH = 200;
 
@@ -298,7 +306,7 @@
 					if(shooting == false)
 					{
 						shooting = true;
-						shootingInterval = setInterval(shootingFunction, 50)
+						shootingInterval = setInterval(shootingFunction, 400/shipObject.bulletSpeed)
 					}
 				} else {
 					clearInterval(shootingInterval);
