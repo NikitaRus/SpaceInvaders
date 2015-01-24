@@ -58,7 +58,7 @@
 
 			var Stars = [];
 
-			for(s = 0; s <= Math.floor(Math.random()*20)+1; s++)
+			for(s = 0; s <= Math.floor(Math.random()*40)+1; s++)
 			{
 				var tmpW = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
 				var tmpH = 0;
@@ -98,8 +98,8 @@
 				{
 					cvasBox.drawImage(StarImage, Stars[Star].x, Stars[Star].y, Stars[Star].size, Stars[Star].size);
 					Stars[Star].size += 0.01;
-					Stars[Star].y += 2.80;
-					Stars[Star].x += -1.40;
+					Stars[Star].y += 5.60;
+					Stars[Star].x += -2.80;
 
 					if(Stars[Star].y > height - 100)
 					{
@@ -252,14 +252,27 @@
 						{
 
 
-							Asteroids[Asteroid].health -= 20;
+							Asteroids[Asteroid].health -= 55;
 
 							cvasBox.strokeStyle = "green";
 							cvasBox.strokeRect(Bullets[BulletAux].x, Bullets[BulletAux].y, 2, 2);
 
-							if(Asteroids[Asteroid].health <= 0)
+							if(Asteroids[Asteroid].health <= 50)
 							{
-								delete Asteroids[Asteroid];
+								if(Asteroids[Asteroid].size > 15)
+								{
+									Asteroids[Asteroid].size -= 15;
+								}
+
+								if(Asteroids[Asteroid].health <= 0)
+								{
+									var tmpW = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
+									var tmpH = 0;	
+									Asteroids[Asteroid].x = tmpW;
+									Asteroids[Asteroid].y = tmpH;
+									Asteroids[Asteroid].size = 5;
+									Asteroids[Asteroid].health = 100;
+								}
 
 								if(shipObject.bulletSpeed < 10)
 								{
@@ -267,18 +280,6 @@
 									clearInterval(shootingInterval);
 									shootingInterval = setInterval(shootingFunction, 400/shipObject.bulletSpeed)
 								}
-
-								var tmpW = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
-								var tmpH = 200;
-
-								Asteroid = {
-									x: tmpW,
-									y: tmpH,
-									size: 5,
-									health: 100
-								};
-
-								Asteroids.push(Asteroid);
 							}
 						}
 					}
