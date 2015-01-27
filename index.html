@@ -6,10 +6,15 @@
 	</head>
 
 	<body>
-		<img src="images/star.png" id="star">
-		<img src="images/asteroid.png" id="asteroid">
-		<img src="images/ship.png" id="ship">
-		<img src="images/heart.png" id="heart">
+		<div style="display:none;">
+			<img src="images/star.png" id="star">
+			<img src="images/asteroid.png" id="asteroid">
+			<img src="images/ship.png" id="ship">
+			<img src="images/heart.png" id="heart">
+			<img src="images/star1.png" id="star1">
+			<img src="images/star2.png" id="star2">
+			<img src="images/star3.png" id="star3">
+		</div>
 
 		<div class="mainMenu" id="mainMenu">
 			<table class="smallMenu" width="300px" height="50%">
@@ -55,6 +60,8 @@
 
 			var width = 800;
 			var height = 600;
+
+			var Item = {}
 
 			var Stars = [];
 
@@ -110,20 +117,42 @@
 				}
 			}
 
+			function collided(object1, object2)
+			{
+				Colliders = [
+				[object1.x, object1.y],
+				[object1.x + object1.width, object1.y],
+				[object1.x, object1.y+object1.height],
+				[object1.x+object1.width,object1.y+object1.height]
+				];
+
+				for(Collider in Colliders)
+				{
+					if(Colliders[Collider][0] >= object2.x && Colliders[Collider][0] <= object2.x + object2.width && Colliders[Collider][1] >= object2.y && Colliders[Collider][1] <= object2.y + object2.height)
+					{
+						return true;
+					} else {
+						return false;
+					}
+					
+				}
+			}
+
 			function moveAsteroids()
 			{
 				for(Asteroid in Asteroids)
 				{
-					cvasBox.drawImage(AsteroidImage, Asteroids[Asteroid].x, Asteroids[Asteroid].y, Asteroids[Asteroid].size, Asteroids[Asteroid].size)
-					Asteroids[Asteroid].size += 1;
+					cvasBox.drawImage(AsteroidImage, Asteroids[Asteroid].x, Asteroids[Asteroid].y, Asteroids[Asteroid].width, Asteroids[Asteroid].height)
+					Asteroids[Asteroid].width += 1;
+					Asteroids[Asteroid].height += 1;
 					Asteroids[Asteroid].y += 8;
 					Asteroids[Asteroid].x += -4;
 
 
-					cvasBox.strokeRect(Asteroids[Asteroid].x,Asteroids[Asteroid].y, Asteroids[Asteroid].size, Asteroids[Asteroid].size);
+					cvasBox.strokeRect(Asteroids[Asteroid].x,Asteroids[Asteroid].y, Asteroids[Asteroid].width, Asteroids[Asteroid].height);
 					cvasBox.strokeRect(shipObject.x, shipObject.y, shipObject.width, shipObject.height);
 
-					if(Asteroids[Asteroid].x + shipObject.width > shipObject.x && Asteroids[Asteroid].x + shipObject.width < shipObject.x + shipObject.width && Asteroids[Asteroid].y > shipObject.y && Asteroids[Asteroid].y < shipObject.y + shipObject.height)
+					if(collided(Asteroids[Asteroid], shipObject) == true)
 					{
 						shipObject.health -= 50;
 
@@ -151,7 +180,8 @@
 						Asteroid = {
 							x: tmpW,
 							y: tmpH,
-							size: 5,
+							width: 5,
+							height: 5,
 							health: 100
 						};
 						
@@ -165,7 +195,8 @@
 						{
 							Asteroids[Asteroid].y = 0;
 							Asteroids[Asteroid].x = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
-							Asteroids[Asteroid].size = 5;
+							Asteroids[Asteroid].width = 5;
+							Asteroids[Asteroid].height = 5;
 						}
 					}
 				}
@@ -220,6 +251,77 @@
 
 			}
 
+
+			var itemVar;
+			var moveItemInterval;
+
+			function throwBonus()
+			{
+				Item = {
+					x: 0,
+					y: 0,
+					width: 30,
+					height: 30,
+					image: "",
+					bonus: 0
+				};
+
+				Item.y = 0;
+				Item.x = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
+				itemVar = Math.floor(Math.random()*2);
+				var starImage = "star" + itemVar;
+				Item.image = document.getElementById(starImage);
+				Item.bonus = itemVar;
+
+				moveItemInterval = setInterval(moveBonusFunc, 50);
+			}
+
+			var moveBonusFunc = function()
+			{
+				if(Item.y < 800)
+				{
+					Item.y += 4;
+					cvasBox.drawImage(Item.image, Item.x, Item.y, Item.width, Item.height);
+					cvasBox.strokeStyle = "green";
+					cvasBox.strokeRect(Item.x, Item.y, Item.width, Item.height);
+
+					if(collided(Item, shipObject) == true)
+					{
+						switch(Item.bonus)
+						{
+							case 0:
+								Item.y = 850;
+								if(shipObject.health + 50 < 100)
+								{
+									shipObject.health += 50;
+								} else {
+									shipObject.health = 100;
+								}
+							break;
+
+							case 1:
+								if(shipObject.bulletSpeed < 10)
+								{
+									Item.y = 850;
+									shipObject.bulletSpeed += 1;
+									clearInterval(shootingInterval);
+									shootingInterval = setInterval(shootingFunction, 400/shipObject.bulletSpeed)
+								}
+								
+							break;
+
+							case 2:
+								
+							break;
+						}
+					}
+
+				} else {
+					delete Item;
+					clearInterval(moveItemInterval);
+				}
+			};
+
 			var shooting = false;
 			var Bullets = [];
 			var shootingInterval;
@@ -248,10 +350,8 @@
 
 					for(Asteroid in Asteroids)
 					{
-						if(Bullets[BulletAux].x > Asteroids[Asteroid].x && Bullets[BulletAux].x < Asteroids[Asteroid].x + Asteroids[Asteroid].size && Bullets[BulletAux].y > Asteroids[Asteroid].y && Bullets[BulletAux].y + 8 < Asteroids[Asteroid].y + Asteroids[Asteroid].size)
+						if(collided(Bullets[BulletAux], Asteroids[Asteroid]) == true)
 						{
-
-
 							Asteroids[Asteroid].health -= 55;
 
 							cvasBox.strokeStyle = "green";
@@ -259,9 +359,10 @@
 
 							if(Asteroids[Asteroid].health <= 50)
 							{
-								if(Asteroids[Asteroid].size > 15)
+								if(Asteroids[Asteroid].width > 15)
 								{
-									Asteroids[Asteroid].size -= 15;
+									Asteroids[Asteroid].width -= 15;
+									Asteroids[Asteroid].height -= 15;
 								}
 
 								if(Asteroids[Asteroid].health <= 0)
@@ -270,15 +371,9 @@
 									var tmpH = 0;	
 									Asteroids[Asteroid].x = tmpW;
 									Asteroids[Asteroid].y = tmpH;
-									Asteroids[Asteroid].size = 5;
+									Asteroids[Asteroid].width = 5;
+									Asteroids[Asteroid].height = 5;
 									Asteroids[Asteroid].health = 100;
-								}
-
-								if(shipObject.bulletSpeed < 10)
-								{
-									shipObject.bulletSpeed += 1;
-									clearInterval(shootingInterval);
-									shootingInterval = setInterval(shootingFunction, 400/shipObject.bulletSpeed)
 								}
 							}
 						}
@@ -333,17 +428,9 @@
 				drawHearts();
 			}
 
-			function healthUp()
-			{
-				if(shipObject.health < 100)
-				{
-					shipObject.health += 20;
-				}
-			}
-
 			bulletMovementInterval = setInterval(bulletMovementFunction, 50);
-			shipHealthInterval = setInterval(healthUp, 1000);
 			starsInterval = setInterval(drawFrame, 100);
+			throwBonusInterval = setInterval(throwBonus, 15000);
 
 		</script>
 
