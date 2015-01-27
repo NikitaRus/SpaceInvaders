@@ -119,22 +119,27 @@
 
 			function collided(object1, object2)
 			{
-				Colliders = [
-				[object1.x, object1.y],
-				[object1.x + object1.width, object1.y],
-				[object1.x, object1.y+object1.height],
-				[object1.x+object1.width,object1.y+object1.height]
-				];
-
-				for(Collider in Colliders)
+				if(object1 && object2)
 				{
-					if(Colliders[Collider][0] >= object2.x && Colliders[Collider][0] <= object2.x + object2.width && Colliders[Collider][1] >= object2.y && Colliders[Collider][1] <= object2.y + object2.height)
+					Colliders = [
+					[object1.x, object1.y],
+					[object1.x + object1.width, object1.y],
+					[object1.x, object1.y+object1.height],
+					[object1.x+object1.width,object1.y+object1.height]
+					];
+
+					for(Collider in Colliders)
 					{
-						return true;
-					} else {
-						return false;
+						if(Colliders[Collider][0] >= object2.x && Colliders[Collider][0] <= object2.x + object2.width && Colliders[Collider][1] >= object2.y && Colliders[Collider][1] <= object2.y + object2.height)
+						{
+							return true;
+						} else {
+							return false;
+						}
+						
 					}
-					
+				} else {
+					console.log("Error with collisions");
 				}
 			}
 
@@ -268,7 +273,7 @@
 
 				Item.y = 0;
 				Item.x = width/100*(Math.floor(Math.random(700)))+(Math.floor(Math.random()*800));
-				itemVar = Math.floor(Math.random()*2);
+				itemVar = Math.floor(Math.random()*2)+1;
 				var starImage = "star" + itemVar;
 				Item.image = document.getElementById(starImage);
 				Item.bonus = itemVar;
@@ -289,7 +294,7 @@
 					{
 						switch(Item.bonus)
 						{
-							case 0:
+							case 1:
 								Item.y = 850;
 								if(shipObject.health + 50 < 100)
 								{
@@ -299,7 +304,7 @@
 								}
 							break;
 
-							case 1:
+							case 2:
 								if(shipObject.bulletSpeed < 10)
 								{
 									Item.y = 850;
@@ -310,8 +315,9 @@
 								
 							break;
 
-							case 2:
-								
+							case 3:
+								Item.y = 850;
+
 							break;
 						}
 					}
@@ -333,9 +339,9 @@
 						x: shipObject.x + shipObject.width/2 - 10 + Math.random()*20,
 						y: shipObject.y
 					};
-				}
 
-				Bullets.push(Bullet);
+					Bullets.push(Bullet);
+				}
 			};
 
 			var bulletMovementFunction = function(){
@@ -380,8 +386,11 @@
 						}
 					}
 
-					cvasBox.strokeStyle = "red";
-					cvasBox.strokeRect(Bullets[BulletAux].x, Bullets[BulletAux].y, 2, 8);
+					if(Bullets[BulletAux])
+					{
+						cvasBox.strokeStyle = "red";
+						cvasBox.strokeRect(Bullets[BulletAux].x, Bullets[BulletAux].y, 2, 8);
+					}
 				}
 			};
 
