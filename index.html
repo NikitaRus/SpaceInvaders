@@ -149,8 +149,8 @@
 					Asteroids[Asteroid].x += -4;
 
 
-					cvasBox.strokeRect(Asteroids[Asteroid].x,Asteroids[Asteroid].y, Asteroids[Asteroid].width, Asteroids[Asteroid].height);
-					cvasBox.strokeRect(shipObject.x, shipObject.y, shipObject.width, shipObject.height);
+					//cvasBox.strokeRect(Asteroids[Asteroid].x,Asteroids[Asteroid].y, Asteroids[Asteroid].width, Asteroids[Asteroid].height);
+					//cvasBox.strokeRect(shipObject.x, shipObject.y, shipObject.width, shipObject.height);
 
 					if(collided(Asteroids[Asteroid], shipObject) == true)
 					{
@@ -282,8 +282,8 @@
 				{
 					Item.y += 4;
 					cvasBox.drawImage(Item.image, Item.x, Item.y, Item.width, Item.height);
-					cvasBox.strokeStyle = "green";
-					cvasBox.strokeRect(Item.x, Item.y, Item.width, Item.height);
+					//cvasBox.strokeStyle = "green";
+					//cvasBox.strokeRect(Item.x, Item.y, Item.width, Item.height);
 
 					if(collided(Item, shipObject) == true)
 					{
@@ -352,17 +352,18 @@
 					{
 						if(collided(Bullets[BulletAux], Asteroids[Asteroid]) == true)
 						{
-							Asteroids[Asteroid].health -= 55;
+							Asteroids[Asteroid].health -= 25;
 
-							cvasBox.strokeStyle = "green";
-							cvasBox.strokeRect(Bullets[BulletAux].x, Bullets[BulletAux].y, 2, 2);
+							cvasBox.strokeStyle = "orange";
+							cvasBox.strokeRect(Bullets[BulletAux].x, Bullets[BulletAux].y, 7, 7);
 
 							if(Asteroids[Asteroid].health <= 50)
 							{
 								if(Asteroids[Asteroid].width > 15)
 								{
-									Asteroids[Asteroid].width -= 15;
-									Asteroids[Asteroid].height -= 15;
+									Asteroids[Asteroid].width -= 5;
+									Asteroids[Asteroid].height -= 5;
+									Asteroids[Asteroid].y -= 5;
 								}
 
 								if(Asteroids[Asteroid].health <= 0)
